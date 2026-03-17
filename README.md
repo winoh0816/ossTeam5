@@ -8,4 +8,5 @@
 20232322 김민구
 20241268 윤정현
 
-gxkdkfvghcytjdfdytdfsafsa
+노원24년거주김민구
+
