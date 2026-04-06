@@ -1,4 +1,4 @@
-# https://github.com/langchain-ai/langchain.git #LLM과 구축한 DB(Pandas DataFrame 등)를 연결할 때 사용하는 프레임워크의 GITHUB 코드페이지
+#LLM과 구축한 DB(Pandas DataFrame 등)를 연결할 때 사용하는 프레임워크의 GITHUB 코드페이지
 # 아래 코드는 만일 위 모델을 사용한다 가정하에 만든 임의의 코드 (참고용으로만 작성했습니다!)
 !pip install langchain langchain-openai langchain-experimental pandas python-dotenv
 import os
