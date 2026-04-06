@@ -1,0 +1,4 @@
+한국어 OCR 탐지 오픈소스 여러가지
+1. 카카오브레인 뽀로로 https://github.com/kakaobrain/pororo
+2. PaddleOCR https://github.com/PaddlePaddle/PaddleOCR/blob/main/readme/README_ko.md
+3. ClovaAI https://github.com/clovaai/CRAFT-pytorch
