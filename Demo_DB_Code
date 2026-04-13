@@ -1,0 +1,75 @@
+import sqlite3
+
+def run_receipt():
+    # 1. 데이터베이스 연결
+    # 실제 파일로 저장하려면 ':memory:' 대신 'receipts.db' 와 같이 파일명을 적어주길 요함
+    conn = sqlite3.connect(':memory:')
+    cursor = conn.cursor() # DB 안에서 SQL 명령어를 전달하고, 그 결과를 다시 파이썬으로 가져오는 '전달자' 역할을 하는 객체 생성
+
+    # 2. 테이블 생성 (가게명, 상품명, 단가, 수량, 총금액을 담을 수 있는 테이블)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS receipt_items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            store_name TEXT NOT NULL,
+            item_name TEXT NOT NULL,
+            unit_price INTEGER,
+            quantity INTEGER,
+            total_price INTEGER
+        )
+    ''')
+
+    # 3. 이미지에서 추출한 샘플 데이터 준비
+    # (가게명, 상품명, 단가, 수량, 총금액)
+    sample_d = [
+        ('남도분식', '어묵1그릇', 2500, 1, 2500),
+        ('남도분식', '오순떡', 13000, 1, 13000),
+        ('남도분식', '꼬마군만두', 2500, 1, 2500),
+        ('골목길 식탁', '돌게바싹파스타', 17000, 1, 17000),
+        ('골목길 식탁', '크림리조또', 15000, 1, 15000),
+        ('광화문미진 세종점', '판메밀', 11000, 1, 11000),
+        ('광화문미진 세종점', '치즈돈가스', 13000, 1, 13000),
+        ('토모니', '초밥정식A', 13000, 1, 13000),
+        ('토모니', '회덮밥', 11000, 1, 11000)
+    ] # 위 변수 내의 데이터들을 현재는 직접 넣었지만 후엔 ocr과 연결해 ocr에서 읽은 데이터들이 들어갈 예정
+
+    # 4. 데이터 삽입 (INSERT)
+    cursor.executemany('''
+        INSERT INTO receipt_items (store_name, item_name, unit_price, quantity, total_price)
+        VALUES (?, ?, ?, ?, ?)
+    ''', sample_d)
+
+    # 변경사항 저장
+    conn.commit() # 지금까지 추가/수정한 내용을 DB에 "최종 확정(저장)"하는 명령어
+    print("데이터가 성공적으로 DB에 저장되었습니다.\n")
+
+    # 5. 데이터 조회 (SELECT) - 전체 리스트 불러오기
+    print("[전체 영수증 데이터 조회]")
+    cursor.execute('SELECT store_name, item_name, unit_price, quantity, total_price FROM receipt_items') # 'receipt_items' 테이블에서 원하는 열의 데이터를 모두 가져오라는 SQL명령어.
+    all_rows = cursor.fetchall() # 조회된 모든 데이터를 파이썬의 리스트로 한 번에 쓸어 담아 all_rows 변수에 저장
+    
+    print(f"{'가게명':<15} | {'상품명':<12} | {'단가':<6} | {'수량':<3} | {'금액':<6}")
+    print("-" * 60)
+    for row in all_rows:
+        # 문자열 포맷팅을 사용해 보기 좋게 출력
+        print(f"{row[0]:<15} | {row[1]:<12} | {row[2]:>6,}원 | {row[3]:>2}개 | {row[4]:>6,}원")
+        
+    print("\n" + "="*60 + "\n")
+
+    # 6. 데이터 응용 조회 - 가게별 총 매출(합계) 구하기
+    print("[가게별 총 결제 금액]")
+    cursor.execute('''
+        SELECT store_name, SUM(total_price) 
+        FROM receipt_items 
+        GROUP BY store_name
+    ''')
+    sum = cursor.fetchall()
+    
+    for store, total in sum:
+        print(f"- {store}: {total:,}원")
+
+    # 7. 연결 종료
+    conn.close()
+
+# 데모 실행
+if __name__ == '__main__':
+    run_receipt()
